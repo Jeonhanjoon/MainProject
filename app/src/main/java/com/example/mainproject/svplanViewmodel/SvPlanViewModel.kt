@@ -5,6 +5,8 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.example.mainproject.Svplans
+import com.example.mainproject.Things
+import com.example.mainproject.repository.AccountRepository
 
 //SvPlan 데이터 관리 위한 viewmodel
 class SvPlanViewModel: ViewModel() {
@@ -24,4 +26,9 @@ class SvPlanViewModel: ViewModel() {
 
         Log.d("ViewModel", "Updated svplanlist: $currentList")
     }
+
+
+
+
+
 }

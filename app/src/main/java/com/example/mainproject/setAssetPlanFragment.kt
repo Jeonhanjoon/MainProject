@@ -5,55 +5,72 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ArrayAdapter
+import android.widget.Toast
+import androidx.fragment.app.activityViewModels
+import androidx.navigation.fragment.findNavController
+import androidx.recyclerview.widget.ItemTouchHelper
+import androidx.recyclerview.widget.RecyclerView
+import com.example.mainproject.databinding.FragmentSetAssetPlanBinding
+import com.example.mainproject.viewmodel.AccountViewModel
 
-// TODO: Rename parameter arguments, choose names that match
-// the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-private const val ARG_PARAM1 = "param1"
-private const val ARG_PARAM2 = "param2"
 
-/**
- * A simple [Fragment] subclass.
- * Use the [setAssetPlanFragment.newInstance] factory method to
- * create an instance of this fragment.
- */
 class setAssetPlanFragment : Fragment() {
-    // TODO: Rename and change types of parameters
-    private var param1: String? = null
-    private var param2: String? = null
 
+    lateinit var binding:  FragmentSetAssetPlanBinding
+    val model: AccountViewModel by activityViewModels()
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        arguments?.let {
-            param1 = it.getString(ARG_PARAM1)
-            param2 = it.getString(ARG_PARAM2)
-        }
+
     }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
+        binding =FragmentSetAssetPlanBinding.inflate(layoutInflater)
+
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_set_asset_plan, container, false)
+        return binding?.root
     }
 
-    companion object {
-        /**
-         * Use this factory method to create a new instance of
-         * this fragment using the provided parameters.
-         *
-         * @param param1 Parameter 1.
-         * @param param2 Parameter 2.
-         * @return A new instance of fragment setAssetPlanFragment.
-         */
-        // TODO: Rename and change types and number of parameters
-        @JvmStatic
-        fun newInstance(param1: String, param2: String) =
-            setAssetPlanFragment().apply {
-                arguments = Bundle().apply {
-                    putString(ARG_PARAM1, param1)
-                    putString(ARG_PARAM2, param2)
-                }
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        val data = listOf("- 선택하세요 -", "취미 및 여가", "식비", "쇼핑", "저축", "교통비", "공부")
+        val adapter = ArrayAdapter(requireContext(), android.R.layout.simple_spinner_item, data)
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+        binding?.spinner?.adapter = adapter
+        binding?.btnSaveData?.setOnClickListener {
+            val name = binding.InputMemo.text.toString()
+            val budget = binding.InputP.text.toString()
+            val category = binding.spinner.selectedItem.toString()
+
+            if (name.isBlank() || budget.isBlank() || category == "- 선택하세요 -") {
+                Toast.makeText(requireActivity(), "입력창에 빈칸이 있습니다.", Toast.LENGTH_SHORT).show()
+            } else {
+                val user = Things(name, budget, category)
+                model.addUser(user)
+             findNavController().navigate(R.id.action_setAssetPlanFragment_to_assetPlanListFragment)
             }
+        }
+        /*val simpleCallback=object: ItemTouchHelper.SimpleCallback(
+            ItemTouchHelper.UP or ItemTouchHelper.DOWN or ItemTouchHelper
+            .START or ItemTouchHelper.END,0){
+            override fun onMove(
+                recyclerView: RecyclerView,
+                viewHolder: RecyclerView.ViewHolder,
+                target: RecyclerView.ViewHolder
+            ): Boolean {
+                val fromPosition = viewHolder.adapterPosition
+                val toPosition = target.adapterPosition
+                return true
+            }
+
+            override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
+                TODO("Not yet implemented")
+            }
+
+        }*/
+
     }
+
 }

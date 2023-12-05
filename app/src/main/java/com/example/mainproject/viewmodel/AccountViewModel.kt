@@ -1,12 +1,13 @@
 package com.example.mainproject.viewmodel
 
-import com.example.mainproject.Account
-
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.example.mainproject.AccList
+import com.example.mainproject.Things
 import com.example.mainproject.repository.AccountRepository
+import com.google.firebase.database.FirebaseDatabase
+
 class AccountViewModel: ViewModel() {
     private val _balance=MutableLiveData<String>("0")
     private val _income=MutableLiveData<String>("0")
@@ -27,4 +28,23 @@ class AccountViewModel: ViewModel() {
         //repository.postBal(_balance.value?:"0")
     }
 
+
+    private val _things=MutableLiveData<ArrayList<Things>?>()
+
+    init{
+        repository.observeUsers(_things) //레포지토리를 사용하여 데이터베이스에서 값 가져옴
+    }
+
+    val things : MutableLiveData<ArrayList<Things>?> get() =_things
+    fun addUser(data : Things){
+        repository.addUserData(data) //레포지토리를 사용하여 데이터베이스에 값 저장
+    }
+    fun deleteUser(data: Things) {
+        repository.deleteUserData(data)
+    }
+    private val databaseReference = FirebaseDatabase.getInstance().getReference("users")
+
+    fun deleteThing(thing: Things) {
+        thing.id?.let { databaseReference.child(it).removeValue() }
+    }
 }
